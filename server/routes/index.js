@@ -5,6 +5,5 @@ const comment = require('./comment');
 module.exports = {
     user,
     post,
-    session,
     comment,
 };
