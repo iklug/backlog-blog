@@ -3,6 +3,16 @@ const router = Router();
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 
+function isAdmin(req,res,next){
+    if(req.isAuthenticated() && req.user.username === 'admin'){
+        console.log(req.user);
+        next();
+    } else if(req.isAuthenticated()){
+        res.redirect('/currentUser');
+    } else {
+        res.redirect('/log-in');
+    }
+};
 
 //view all posts
 
@@ -54,7 +64,7 @@ router.post('/:postId/comment', async (req,res)=>{
 
 //add a single post -- auth needed
 
-router.post('/submit', async (req,res)=>{
+router.post('/', isAdmin, async (req,res)=>{
     try {
         const newPost = await Post.create(req.body);
         res.send('added new post to database');

@@ -92,6 +92,7 @@ function checkNotAuth(req,res,next){
     }
 }
 
+
 const PORT = process.env.PORT || 3000;
 
 // app.get('/', (req,res)=>{
@@ -124,7 +125,7 @@ app.post("/sign-up",checkNotAuth, async (req,res,next)=>{
 
 app.post("/log-in", checkNotAuth, passport.authenticate('local', {
     successRedirect: '/currentUser',
-    failureRedirect: '/login',
+    failureRedirect: '/log-in',
 }));
 
 app.get("/log-in", checkNotAuth, (req,res)=>{
