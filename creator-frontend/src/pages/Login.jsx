@@ -1,0 +1,89 @@
+import Button from '../components/Button'
+import {useState, useEffect} from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+
+const Login = () => {
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [loggingIn, setLoggingIn] = useState(false);
+
+    const setJWT = (token) => {
+        sessionStorage.setItem('jwt', token);
+    }
+    const getJWT = () => {
+        return sessionStorage.getItem('jwt');
+    }
+    const setRefreshToken = (token) => {
+        sessionStorage.setItem('refreshToken', token);
+    }
+    const getRefreshToken = ()=> {
+        return sessionStorage.getItem('refreshToken');
+    }
+const navigate = useNavigate();
+
+    useEffect(()=>{
+        if(loggingIn){
+        const loginUser = async() => {
+            
+                    try {
+                        const request = await fetch("http://localhost:3000/log-in", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })  
+                    });
+                    if(!request.ok){
+                        throw new Error("unable to perform request");
+                    }
+                    const data = await request.json();
+                    setJWT(data.accessToken);
+                    setRefreshToken(data.refreshToken);
+                    } catch (error) {
+                        console.error(error);
+                        setUsername('');
+                        setPassword('');
+                        setLoggingIn(false);
+                        return;
+                    }
+                } 
+                loginUser();
+                console.log('logged in', username);
+                setUsername('');
+            setPassword('');
+            setLoggingIn(false);
+            navigate('/');
+            }
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [loggingIn]);
+
+
+    return (
+        <div className='h-52 w-52 border-gray-400 bg-slate-200 rounded-md m-auto mt-56 flex flex-col'>
+        
+        <div className='flex flex-col gap-1 mt-8 mb-2 pl-2 pr-2'>
+            <div>
+                <input value={username} placeholder="username"
+                onChange={e=>setUsername(e.target.value)}
+                className="p-1 outline-none" name="username"/>
+            </div>
+            <div>
+                <input value={password} placeholder="password"
+                onChange={e=>setPassword(e.target.value)}
+                className="p-1 outline-none" name="password" type="password"
+                />
+            </div>
+        </div>
+        <div className='flex justify-center mt-4'>
+        <Link><Button name='Log In' clickFunction={()=>setLoggingIn(true)}/></Link>
+        </div>
+        </div>
+    )
+};
+
+export default Login;
