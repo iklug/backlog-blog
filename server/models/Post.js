@@ -5,12 +5,17 @@ const PostSchema = new Schema({
     title: {
         type: String,
         minLength: 1,
-        maxLength: 100,
+        maxLength: 85,
         required: true,
     },
     content: {
         type: String,
         minLength: 1,
+        required: true,
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
         required: true,
     },
     timeStamp: {

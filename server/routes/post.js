@@ -1,11 +1,11 @@
-const {Router} = require('express');
+const {Router, request} = require('express');
 const router = Router();
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
+const jwt = require('jsonwebtoken');
 
 function isAdmin(req,res,next){
     if(req.isAuthenticated() && req.user.username === 'admin'){
-        console.log(req.user);
         next();
     } else if(req.isAuthenticated()){
         res.redirect('/currentUser');
@@ -14,11 +14,27 @@ function isAdmin(req,res,next){
     }
 };
 
+
+function verifyToken(req,res,next) {
+    //get auth header value
+    console.log('we in');
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    console.log('next stage: ', token);
+    if(token == null) return res.sendStatus(402).json({message: "aww booty"}); //== allows coercion
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, authData)=>{
+        if(err) return res.status(401).json({message:'incorrect access token'});
+        req.user = authData;
+        console.log('almost there');
+        next();
+    })
+}
+
 //view all posts
 
 router.get('/', async (req,res)=>{
    try {
-    const allPosts = await Post.find();
+    const allPosts = await Post.find().sort({timeStamp: -1});
     res.json(allPosts);
    } catch(err) {
     res.status(500).json({message: err.message});
@@ -29,30 +45,58 @@ router.get('/', async (req,res)=>{
 
 router.get('/:postId', async (req,res)=>{
     try {
-        const post = await Post.find({"_id": req.params.postId});
-        const comments = await Comment.find({parentPost: req.params.postId});
-        const entirePost = {
-            ...post, ...comments};
-        res.json(entirePost);
-} catch(err){
+        const post = await Post.findById(req.params.postId);
+        const comments = await Comment.find({parentPost: req.params.postId}).limit(10);
+        const viewPost = {
+            post: {...post._doc},
+            comments: [...comments],
+        }
+        res.json(viewPost);
+    }catch(err){
         res.status(500).json({message: err.message});
     }
 });
 
+//view all that post's comments
+
+router.get('/:postId/comments', async (req,res)=>{
+    console.log(req.user);
+    try {
+        const comments = await Comment.find({parentPost: req.params.postId});
+        res.json(comments);
+    } catch (err) {
+        res.status(500).json({message: err.message});
+    }
+});
+
+//view all post's comments with more info
+
+router.get('/:postId/comments-full', async(req,res)=>{
+    try {
+        const commentsWithAuthors = await Comment.find({parentPost: req.params.postId}).sort({timeStamp: -1}).populate({
+            path: 'commentAuthor',
+            select: 'username',
+        });
+        res.json(commentsWithAuthors);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+
 //add comment to viewed post
 
-router.post('/:postId/comment', async (req,res)=>{
+router.post('/:postId/comments', verifyToken, async (req,res)=>{
     try {
-
         const newComment = await Comment.create({
-            commentAuthor: req.user,
+            commentAuthor: req.user._id,
             content: req.body.content,
             parentPost: req.params.postId,
         }
         );
         res.json(newComment);
 } catch(err){
-        res.status(500).json({message: err.message});
+        res.status(401).json({message: err.message});
     }
 });
 
@@ -61,13 +105,24 @@ router.post('/:postId/comment', async (req,res)=>{
 
 //view unpublished posts
 
+router.get('/pending', isAdmin, async (req,res)=>{
+    const posts = await Post.find({published: false});
+    res.json(posts);
+});
 
 //add a single post -- auth needed
 
-router.post('/', isAdmin, async (req,res)=>{
+router.post('/', verifyToken, async (req,res)=>{
+    
     try {
-        const newPost = await Post.create(req.body);
-        res.send('added new post to database');
+        const newPost = await Post.create(
+          {
+            title: req.body.title,
+            content: req.body.content,
+            author: req.user._id,
+          }  
+        );
+        res.json(newPost._id);
     } catch(err){
         res.status(500).json({message: err.message});
     }
@@ -75,10 +130,11 @@ router.post('/', isAdmin, async (req,res)=>{
 
 //delete a single post -- auth needed
 
-router.delete('/:postId', async(req,res)=>{
+router.delete('/:postId', verifyToken, async(req,res)=>{
     try {
         const deleted = await Post.deleteOne({"_id": req.params.postId});
-        res.send(`post #${req.params.postId} deleted..`);
+        const deleteComments = await Comment.deleteMany({parentPost: req.params.postId});
+        res.json(`post #${req.params.postId} deleted..`);
     } catch(err){
         res.status(500).json({message: err.message});
     }

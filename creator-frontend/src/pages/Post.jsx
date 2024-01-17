@@ -3,9 +3,14 @@ import { useParams } from "react-router-dom";
 import Banner from "../components/Banner";
 import Comment from "../components/Comment";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
 const Post = () => {
 
+    const navigate = useNavigate();
+    
 const [thisPost, setThisPost] = useState(null);
 const [viewComments, setViewComments] = useState(false);
 const [comments, setComments] = useState(null);
@@ -76,8 +81,32 @@ const submitComment = async() => {
        console.error(error); 
     }
     
-
 }
+
+const deletePost = async() => {
+        try {
+            const token = sessionStorage.getItem('jwt');
+            console.log('token up in here: ', token);
+            const request = await fetch(`http://localhost:3000/posts/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if(!request.ok){
+                throw new Error('error at request');
+            }
+            const data = await request.json();
+            console.log(data);
+            navigate(`/`);
+        } catch (error) {
+           console.error(error); 
+        }
+        
+    
+    }
+    
 
     return (
         <div className=" h-screen">
@@ -85,6 +114,8 @@ const submitComment = async() => {
         <div id='postContent' className=" h-screen w-full bg-scroll bg-repeat bg-cover pt-16 bg-gradient-to-tr from-cyan-300 from-1% via-40% to-99% via-slate-100 to-purple-400">
             {thisPost && <div>
                 <div id="postBody" className=" w-7/12 m-auto p-10 border-2 bg-white rounded-xl shadow-lg whitespace-normal">
+                <div onClick={deletePost} className=" text-xl font-bold float-right -mt-10 -mr-8 text-slate-300 cursor-pointer">x</div>
+
                     <div className=" text-4xl text-gray-800">{thisPost.post.title}</div>
                     <div id="smallerDetails">
                         <div className="font-semibold text-sm mt-2">by Admin</div>
