@@ -6,6 +6,8 @@ import Login from './pages/Login'
 import Home from './pages/Home'
 import Post from './pages/Post'
 import NewPost from './pages/NewPost'
+import SignUp from './pages/Signup'
+import Profile from './pages/Profile'
 
 export const ShopContext = createContext({
   posts: [],
@@ -26,6 +28,8 @@ console.log(posts);
       <Route path='/' element={<Home setPosts={setPosts} posts={posts} handleSelect={setCurrentPost}/>}></Route>
       <Route path={`/posts/:id`} element={<Post postData={posts}/>}></Route>
       <Route path='/new-post' element={<NewPost/>}></Route>
+      <Route path='/signup' element={<SignUp/>}></Route>
+      <Route path='/profile' element={<Profile/>}></Route>
     </Routes>
   </div>
   </ShopContext.Provider>
