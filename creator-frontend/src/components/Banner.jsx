@@ -4,7 +4,7 @@ import { Route, Link } from "react-router-dom";
 
 const Banner = ()=>{
     return (
-        <div className="w-full h-16 bg-slate-50 flex justify-between pl-4 pr-8 items-end drop-shadow-lg">
+        <div className="w-full h-16 bg-slate-50 flex justify-between pl-4 pr-8 items-end drop-shadow-lg fixed top-0">
             <Link to='/'>
                 <div className="mb-2">
 

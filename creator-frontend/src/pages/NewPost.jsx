@@ -39,7 +39,7 @@ const submitPost = async() => {
     return (
         <div className=" h-screen">
             <Banner/>
-            <div id='postContent' className=" h-screen w-full bg-scroll bg-repeat bg-cover pt-16 bg-gradient-to-tr from-cyan-300 from-1% via-40% to-99% via-slate-100 to-purple-400">
+            <div id='postContent' className="mt-12 h-screen w-full bg-scroll bg-repeat bg-cover pt-16 bg-gradient-to-tr from-cyan-300 from-1% via-40% to-99% via-slate-100 to-purple-400">
         
                 <div id="postBody" className=" w-7/12 h-4/6 m-auto p-10 border-2 bg-white rounded-xl shadow-lg whitespace-normal">
                     <div id="smallerDetails">

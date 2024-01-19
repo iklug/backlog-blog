@@ -40,15 +40,20 @@ const Profile = () => {
     
 
     return (
-       <div>
+       <div className="bg-gradient-to-tr from-cyan-300 from-1% via-40% to-99% via-slate-100 to-purple-400 min-h-screen">
         <Banner/>
-        <div>
-            <div>Profile Picture</div>
-            <div>{getUsername()}</div>
+        <div className=" w-5/12 min-w-450 min-h-screen flex flex-col items-center m-auto bg-white overflow-scroll">
+            <div className="flex items-center gap-5 mt-24">
+                <div className=" border-4 border-gray-400 h-32 w-32 rounded-full flex justify-center items-center">Profile Picture</div>
+                <div className="text-2xl ">{getUsername()}'s profile</div>
+            </div>
+            <div className="border-t-gray-100 border w-96 mt-2"></div>
+            <div className="mt-6 ml-6">Your Comments:</div>
+            {comments &&
+            <div className="flex flex-col ml-6 overflow-auto h-128 w-96">{comments.map(item => <Comment username={item.commentAuthor.username} key={item._id} time={item.timeStamp} content={item.content}></Comment>)}</div>
+                   }
         </div>
-        {comments &&
-        <div className="flex flex-col ml-6 overflow-auto h-128 w-96">{comments.map(item => <Comment username={item.commentAuthor.username} key={item._id} time={item.timeStamp} content={item.content}></Comment>)}</div>
-       }</div>
+        </div>
     )
 }
 

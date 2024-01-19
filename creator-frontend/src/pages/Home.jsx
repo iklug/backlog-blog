@@ -58,8 +58,10 @@ const deletePost = async() => {
     return (
         <div>
             <Banner/>
-            {posts.map(item => <Post key={item._id} id={item._id} title={item.title} 
-            content={item.content} author='Admin' date={item.timeStamp} handleSelect={handleSelect}/>)}
+            <div className="mt-20">
+                {posts.map(item => <Post key={item._id} id={item._id} title={item.title}
+                content={item.content} author='Admin' date={item.timeStamp} handleSelect={handleSelect}/>)}
+            </div>
         </div>
     )
 }

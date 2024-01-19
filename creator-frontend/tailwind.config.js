@@ -10,6 +10,9 @@ export default {
         '128': '425px'
       }
     },
+    minWidth: {
+      '450': '450px'
+    },
   },
   plugins: [],
 }
