@@ -6,13 +6,14 @@ const router = Router();
 const jwt = require('jsonwebtoken');
 
 
-function checkAuth(req,res,next){
-    if(req.isAuthenticated()){
-        return next();
-    } else {
-        return res.sendStatus(402).json({message: "not authorized, please log in"})
-    }
-};
+// function checkAuth(req,res,next){
+//     if(req.isAuthenticated()){
+//         console.log('did we get here???');
+//         return next();
+//     } else {
+//         return res.sendStatus(402).json({message: "not authorized, please log in"})
+//     }
+// };
 
 function verifyToken(req,res,next) {
     //get auth header value
@@ -35,9 +36,12 @@ function verifyToken(req,res,next) {
 
 //view all current user comments
 
-router.get('/', checkAuth, async (req,res)=>{
+router.get('/', verifyToken, async (req,res)=>{
     try {
-        const comments = await Comment.find({commentAuthor: req.user._id});
+        const comments = await Comment.find({commentAuthor: req.user._id}).populate({
+            path: 'commentAuthor',
+            select: 'username',
+        });
         res.json(comments);
     } catch (err) {
         res.status(500).json({message: err.message});
@@ -47,7 +51,7 @@ router.get('/', checkAuth, async (req,res)=>{
 
 //ability to edit one of your own comments?
 
-router.put('/:commentId',checkAuth, async (req,res)=>{
+router.put('/:commentId', async (req,res)=>{
 
     try {
         const comment = await Comment.findOne({_id: req.params.commentId});
@@ -64,7 +68,7 @@ router.put('/:commentId',checkAuth, async (req,res)=>{
 
 //delete your own comment?
 
-router.delete('/:commentId',checkAuth, async (req,res)=>{
+router.delete('/:commentId', async (req,res)=>{
 
     try {
         const comment = await Comment.findOne({_id: req.params.commentId});

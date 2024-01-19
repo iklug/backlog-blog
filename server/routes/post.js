@@ -25,9 +25,17 @@ function verifyToken(req,res,next) {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, authData)=>{
         if(err) return res.status(401).json({message:'incorrect access token'});
         req.user = authData;
+        console.log(req.user);
         console.log('almost there');
         next();
     })
+}
+function verifyAdmin(req,res,next){
+    console.log('checking if Admin..');
+    if(req.user.username !== 'admin'){
+        return res.status(401).json({message:'you do not have access to this feature'});
+    }
+    next();
 }
 
 //view all posts
@@ -112,7 +120,7 @@ router.get('/pending', isAdmin, async (req,res)=>{
 
 //add a single post -- auth needed
 
-router.post('/', verifyToken, async (req,res)=>{
+router.post('/', verifyToken, verifyAdmin, async (req,res)=>{
     
     try {
         const newPost = await Post.create(
