@@ -42,10 +42,12 @@ passport.use(
             //in this try/catch block we'll make sure the username and password match
             const user = await User.findOne({username});
             if(!user){
+                console.log('no user with username');
                 return done(null, false, {message: "Incorrect username"});
             }
             const match = await bcrypt.compare(password, user.password);
             if(!match){
+                console.log('password incorrect');
                 return done(null, false, {message: "Incorrect password"});
             }
             return done(null, user);
@@ -102,8 +104,12 @@ app.post('/api', verifyToken, (req,res)=>{
 });
 
 
-app.post("/sign-up",checkNotAuth, async (req,res,next)=>{
+app.post("/signup",checkNotAuth, async (req,res,next)=>{
     try {
+        const newUser = await User.find({username: req.body.username});
+        if(newUser.length > 0){
+            throw new Error('username already taken')
+        }
         bcrypt.hash(req.body.password, 10, async(err,hash)=>{
             if(err){
                 next(err);
@@ -139,6 +145,7 @@ app.post('/token', async(req,res)=>{
 
 
 app.post("/log-in", checkNotAuth, passport.authenticate('local'),async(req,res)=>{
+    console.log('literally just anything');
     const user = {_id: req.user._doc._id, username: req.user.username};
     const accessToken = generateAccessToken(user);
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '24h'});

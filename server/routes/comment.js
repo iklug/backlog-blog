@@ -3,15 +3,31 @@ const User = require('../models/Comment');
 const Post =  require('../models/Post');
 const Comment = require('../models/Comment');
 const router = Router();
+const jwt = require('jsonwebtoken');
+
 
 function checkAuth(req,res,next){
     if(req.isAuthenticated()){
         return next();
     } else {
-        res.redirect('/log-in')
+        return res.sendStatus(402).json({message: "not authorized, please log in"})
     }
 };
 
+function verifyToken(req,res,next) {
+    //get auth header value
+    console.log('we in');
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    console.log('next stage: ', token);
+    if(token == null) return res.sendStatus(402).json({message: "aww booty"}); //== allows coercion
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, authData)=>{
+        if(err) return res.status(401).json({message:'incorrect access token'});
+        req.user = authData;
+        console.log('almost there');
+        next();
+    })
+}
 
 //view all comments associated with a specific blogpost
 
