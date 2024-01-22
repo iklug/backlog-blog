@@ -42,12 +42,12 @@ passport.use(
             //in this try/catch block we'll make sure the username and password match
             const user = await User.findOne({username});
             if(!user){
-                console.log('no user with username');
+                console.log('error: no user with username');
                 return done(null, false, {message: "Incorrect username"});
             }
             const match = await bcrypt.compare(password, user.password);
             if(!match){
-                console.log('password incorrect');
+                console.log('error: password incorrect');
                 return done(null, false, {message: "Incorrect password"});
             }
             return done(null, user);
@@ -79,14 +79,14 @@ app.use((req,res,next)=>{
 });
 
 function checkAuth(req,res,next){
-    console.log('we are in checkAuth');
-    console.log(req.user);
     if(req.isAuthenticated()){
         return next();
     } else {
-        res.json({message: 'Please log in'});
+        res.redirect(401, '/login');
     }
 }
+
+
 function checkNotAuth(req,res,next){
     if(req.isAuthenticated()){
         res.json({message: 'Already logged in'});
@@ -145,7 +145,6 @@ app.post('/token', async(req,res)=>{
 
 
 app.post("/log-in", checkNotAuth, passport.authenticate('local'),async(req,res)=>{
-    console.log('literally just anything');
     const user = {_id: req.user._doc._id, username: req.user.username};
     const accessToken = generateAccessToken(user);
     const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '24h'});
@@ -209,7 +208,6 @@ function verifyToken(req,res,next) {
 }
 
 function generateAccessToken(user){
-    console.log('generate user: ///',user);
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
 }
 

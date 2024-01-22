@@ -14,24 +14,30 @@ function isAdmin(req,res,next){
     }
 };
 
+// function checkAuth(req,res,next){
+//     console.log('we are in checkAuth');
+//     console.log(req.user);
+//     if(req.isAuthenticated()){
+//         return next();
+//     } else {
+//         return res.status(401).json({message:'/login'});
+//     }
+// }
 
 function verifyToken(req,res,next) {
     //get auth header value
-    console.log('we in');
+    console.log('alert: verifying token..');
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    console.log('next stage: ', token);
     if(token == null) return res.sendStatus(402).json({message: "aww booty"}); //== allows coercion
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, authData)=>{
         if(err) return res.status(401).json({message:'incorrect access token'});
         req.user = authData;
-        console.log(req.user);
-        console.log('almost there');
+        console.log('this is getting passed on as req.user:',req.user);
         next();
     })
 }
 function verifyAdmin(req,res,next){
-    console.log('checking if Admin..');
     if(req.user.username !== 'admin'){
         return res.status(401).json({message:'you do not have access to this feature'});
     }
@@ -40,7 +46,7 @@ function verifyAdmin(req,res,next){
 
 //view all posts
 
-router.get('/', async (req,res)=>{
+router.get('/', verifyToken, async (req,res)=>{
    try {
     const allPosts = await Post.find().sort({timeStamp: -1});
     res.json(allPosts);
@@ -68,7 +74,6 @@ router.get('/:postId', async (req,res)=>{
 //view all that post's comments
 
 router.get('/:postId/comments', async (req,res)=>{
-    console.log(req.user);
     try {
         const comments = await Comment.find({parentPost: req.params.postId});
         res.json(comments);
