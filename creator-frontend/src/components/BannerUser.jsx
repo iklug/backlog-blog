@@ -2,7 +2,13 @@ import { Route, Link } from "react-router-dom";
 
 
 
-const Banner = ()=>{
+const BannerUser = ()=>{
+
+    const getUsername = () => {
+        return sessionStorage.getItem('username');
+    }
+
+
     return (
         <div className="w-full h-16 bg-slate-50 flex justify-between pl-4 pr-8 items-end drop-shadow-lg fixed top-0">
             <Link to='/'>
@@ -15,9 +21,7 @@ const Banner = ()=>{
             </div>
             </Link>
             <div className="flex h-14 gap-6 items-end mb-1 ">
-                <Link to='/new-post'>
-                    <div className="h-6 w-6 bg-gray-200 border-gray-500 border-2 mb-1 rounded-full"></div>
-                </Link>
+                <div>{getUsername()}</div>
                 <Link to='/profile'>
                     <div className="h-12 w-12 rounded-full bg-gray-800"></div>
                 </Link>
@@ -26,4 +30,4 @@ const Banner = ()=>{
     )
 }
 
-export default Banner;
+export default BannerUser;

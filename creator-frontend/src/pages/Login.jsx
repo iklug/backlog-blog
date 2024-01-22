@@ -1,6 +1,8 @@
 import Button from '../components/Button'
 import {useState, useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { authAdmin, authUser, setUsername, selectAuth } from '../redux/authSlice';
+import {useDispatch, useSelector} from 'react-redux';
 
 const Login = () => {
 
@@ -8,6 +10,9 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [loggingIn, setLoggingIn] = useState(false);
     const [errorMessage, setErrorMessage] = useState(false);
+    
+
+    const dispatch = useDispatch();
 
     const setJWT = (token) => {
         sessionStorage.setItem('jwt', token);
@@ -41,6 +46,13 @@ const attemptLogIn = async() => {
         }
         const data = await request.json();
         setJWT(data.accessToken);
+
+        const [header, payload, signature] = data.accessToken.split('.');
+        const decodePayload = JSON.parse(atob(payload));
+        const theUsername = decodePayload.username;
+        console.log('this is apparently the jwt decoded username:', theUsername);
+
+
         setRefreshToken(data.refreshToken);
         console.log('these are the tokens:',data);
     } catch(error){
@@ -52,11 +64,17 @@ const attemptLogIn = async() => {
     }
     console.log('this is success if you see this-- but should it be?');
     sessionStorage.setItem('username', username);
+    username === 'admin' ? dispatch(authAdmin()) : dispatch(authUser());
     setUsername('');
     setPassword('');
-    navigate('/');
+    // navigate('/');
 }
 
+const auth = useSelector(selectAuth);
+console.log('🥑',auth); 
+if(auth !== ''){
+    navigate('/');
+}
     // useEffect(()=>{
     //     if(loggingIn){
     //     const loginUser = async() => {
