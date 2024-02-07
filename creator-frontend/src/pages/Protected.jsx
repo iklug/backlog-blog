@@ -9,7 +9,7 @@ const Protected = () => {
     useEffect(()=>{
             const accessProtected = async()=>{
                 try {
-                    const request = await fetch(`http://localhost:3000/protected`, {
+                    const request = await fetch(`https://backlog-blog.fly.dev/protected`, {
                         methd: 'GET',
                         credentials: 'include',
                     });

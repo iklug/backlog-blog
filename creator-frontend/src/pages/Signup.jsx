@@ -20,7 +20,8 @@ useEffect(()=>
 
 const attemptSignUp = async() => {
     try {
-        const request = await fetch("http://localhost:3000/signup", {
+        // const request = await fetch("http://localhost:3000/signup", {
+        const request = await fetch("https://backlog-blog.fly.dev/signup", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

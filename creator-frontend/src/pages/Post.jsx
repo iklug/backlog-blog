@@ -33,7 +33,7 @@ useEffect(()=>{
     if(thisPost == null){
         const retrieveData = async()=> {
             try{
-        const request = await fetch(`http://localhost:3000/posts/${id}`, {
+        const request = await fetch(`https://backlog-blog.fly.dev/posts/${id}`, {
             credentials: 'include',
         });
         if(!request.ok){
@@ -53,7 +53,7 @@ useEffect(()=>{
     if(viewComments && comments === null){
         const getComments = async()=>{
             try {
-                const request = await fetch(`http://localhost:3000/posts/${id}/comments-full`, {
+                const request = await fetch(`https://backlog-blog.fly.dev/posts/${id}/comments-full`, {
                     credentials: 'include',
                 });
                 if(!request.ok){
@@ -75,7 +75,7 @@ const submitComment = async() => {
     try {
         const token = sessionStorage.getItem('jwt');
         console.log('token up in here: ', token);
-        const request = await fetch(`http://localhost:3000/posts/${id}/comments`, {
+        const request = await fetch(`https://backlog-blog.fly.dev/posts/${id}/comments`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -104,7 +104,7 @@ const deletePost = async() => {
         try {
             // const token = sessionStorage.getItem('jwt');
             // console.log('token up in here: ', token);
-            const request = await fetch(`http://localhost:3000/posts/${id}`, {
+            const request = await fetch(`https://backlog-blog.fly.dev/posts/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {

@@ -32,14 +32,17 @@ useEffect(()=>
 {if(sessionStorage.getItem('username')){
     navigate('/');
 }}
-,[])
+,[]);
+
+
 if(sessionStorage.getItem('username')){
     navigate('/')
 }
 
 const attemptLogIn = async() => {
     try {
-        const request = await fetch("http://localhost:3000/login", {
+        const request = await fetch("https://backlog-blog.fly.dev/login", {
+        //   const request = await fetch("http://localhost:3000/login", {
             method: 'POST',
             credentials: 'include',
             headers: {

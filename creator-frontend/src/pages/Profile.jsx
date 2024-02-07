@@ -37,7 +37,7 @@ const Profile = () => {
         const getProfileInfo = async() => {
             try {
                 // const token = sessionStorage.getItem('jwt');
-                const request = await fetch('http://localhost:3000/comments', {
+                const request = await fetch('https://backlog-blog.fly.dev/comments', {
                     credentials: 'include',
                     // headers: {
                     //     'Authorization': `Bearer ${token}`
@@ -60,7 +60,7 @@ const Profile = () => {
     const logoutUser = async() => {
       try {
         // const token = sessionStorage.getItem('jwt');
-        const request = await fetch("http://localhost:3000/logout", {
+        const request = await fetch("https://backlog-blog.fly.dev/logout", {
             method: 'GET',
             credentials: 'include',
             // headers: {

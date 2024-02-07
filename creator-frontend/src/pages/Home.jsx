@@ -31,7 +31,8 @@ useEffect(()=>{
     if(posts.length < 1){const getPosts = async() => {
         try {
             const token = sessionStorage.getItem('jwt');
-            const request = await fetch('http://localhost:3000/posts', {
+            const request = await fetch('https://backlog-blog.fly.dev/posts', {
+            // const request = await fetch('http://localhost:3000/posts', {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -58,7 +59,7 @@ const deletePost = async() => {
         try {
             const token = sessionStorage.getItem('jwt');
             console.log('token up in here: ', token);
-            const request = await fetch(`http://localhost:3000/posts/`, {
+            const request = await fetch(`https://backlog-blog.fly.dev/posts/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

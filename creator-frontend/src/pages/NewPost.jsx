@@ -18,7 +18,7 @@ const submitPost = async() => {
     try {
         // const token = sessionStorage.getItem('jwt');
         // console.log('token up in here: ', token);
-        const request = await fetch(`http://localhost:3000/posts/`, {
+        const request = await fetch(`https://backlog-blog.fly.dev/posts/`, {
             method: 'POST',
             credentials: 'include',
             headers: {
