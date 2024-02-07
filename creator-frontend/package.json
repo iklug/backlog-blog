@@ -1,5 +1,4 @@
-{"homepage": "https://iklug.github.io/backlog-blog/",
-  "name": "creator-frontend",
+{ "name": "creator-frontend",
   "private": false,
   "version": "0.0.0",
   "type": "module",
