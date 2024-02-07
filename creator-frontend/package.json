@@ -1,7 +1,6 @@
-{
+{"homepage": "https://iklug.github.io/backlog-blog/",
   "name": "creator-frontend",
-  "homepage": "https://iklug.github.io/backlog-blog",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -10,7 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",
