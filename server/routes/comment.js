@@ -15,20 +15,6 @@ const jwt = require('jsonwebtoken');
 //     }
 // };
 
-function verifyToken(req,res,next) {
-    //get auth header value
-    console.log('we in');
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    console.log('next stage: ', token);
-    if(token == null) return res.sendStatus(402).json({message: "aww booty"}); //== allows coercion
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, authData)=>{
-        if(err) return res.status(401).json({message:'incorrect access token'});
-        req.user = authData;
-        console.log('almost there');
-        next();
-    })
-}
 
 //view all comments associated with a specific blogpost
 
@@ -36,7 +22,7 @@ function verifyToken(req,res,next) {
 
 //view all current user comments
 
-router.get('/', verifyToken, async (req,res)=>{
+router.get('/', async (req,res)=>{
     try {
         const comments = await Comment.find({commentAuthor: req.user._id}).populate({
             path: 'commentAuthor',
