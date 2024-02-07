@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for blog-server-klug on 2023-11-27T10:53:48-07:00
+# fly.toml app configuration file generated for backlog-blog on 2024-02-07T08:29:02-07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "blog-server-klug"
-primary_region = "lax"
+app = 'backlog-blog'
+primary_region = 'lax'
 
 [build]
 
@@ -14,9 +14,9 @@ primary_region = "lax"
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
 [[vm]]
-  cpu_kind = "shared"
+  cpu_kind = 'shared'
   cpus = 1
   memory_mb = 1024

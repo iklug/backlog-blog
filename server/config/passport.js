@@ -1,6 +1,5 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const connection = require('./database');
 const User = require('../models/User');
 const { user } = require('../routes');
 const validatePassword = require('../lib/passwordUtils').validatePassword;
@@ -11,6 +10,7 @@ const validatePassword = require('../lib/passwordUtils').validatePassword;
 
 passport.use(
     new LocalStrategy(async (username, password, done) =>{
+        console.log('in Local Strategy')
         try {
             //in this try/catch block we'll make sure the username and password match
             const user = await User.findOne({username});
@@ -23,6 +23,7 @@ passport.use(
                 console.log('error: password incorrect');
                 return done(null, false, {message: "Incorrect password"});
             }
+            console.log('made it through the hoops, returning user');
                 return done(null, user);
         } catch(err){
             console.log('an error happened here');
@@ -39,7 +40,7 @@ passport.serializeUser((user,done)=>{
 
 //deserialize will take the userId and then populate that to the req.user object -- so you have all the user info
 passport.deserializeUser(async(id, done)=>{
-    console.log('you in deserialize');
+    console.log('deserializeUser is happening: ');
     try {
         console.log('find user..', id);
         const user = await User.findById(id);

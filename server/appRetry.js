@@ -53,14 +53,17 @@ const sessionStore = new MongoDBStore({
 });
 sessionStore.on('error', (error)=>console.log(error));
 
+app.enable('trust proxy');
 app.use(session({
     secret: 'secret',
     resave: false,
     saveUninitialized: true, //what does the session do if nothing is changed?
+    proxy: true,
     store: sessionStore,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 1 day * 24 hours * 60 minutes * 60 seconds * 1000 miliseconds
-
+        secure: true,
+        sameSite: 'none',
     },
 }));
 
@@ -85,7 +88,7 @@ app.use('/comments', routes.comment);
 
 app.post('/login', checkNoAuth, passport.authenticate('local'), (req,res,next)=>{
     // res.header('Access-Control-Allow-Methods', 'POST');
-    console.log('but it is happening over here');
+    console.log('but it is happening over here: ', req.user);
     res.json(req.user.admin);
 });
 
