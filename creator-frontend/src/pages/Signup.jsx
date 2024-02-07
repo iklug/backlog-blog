@@ -11,6 +11,12 @@ const SignUp = () => {
 
 const navigate = useNavigate();
 
+useEffect(()=>
+{if(sessionStorage.getItem('username')){
+    navigate('/');
+}}
+,[]);
+
 
 const attemptSignUp = async() => {
     try {

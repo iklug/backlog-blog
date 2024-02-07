@@ -14,25 +14,34 @@ const Login = () => {
 
     const dispatch = useDispatch();
 
-    const setJWT = (token) => {
-        sessionStorage.setItem('jwt', token);
-    }
-    const getJWT = () => {
-        return sessionStorage.getItem('jwt');
-    }
-    const setRefreshToken = (token) => {
-        sessionStorage.setItem('refreshToken', token);
-    }
-    const getRefreshToken = ()=> {
-        return sessionStorage.getItem('refreshToken');
-    }
+    // const setJWT = (token) => {
+    //     sessionStorage.setItem('jwt', token);
+    // }
+    // const getJWT = () => {
+    //     return sessionStorage.getItem('jwt');
+    // }
+    // const setRefreshToken = (token) => {
+    //     sessionStorage.setItem('refreshToken', token);
+    // }
+    // const getRefreshToken = ()=> {
+    //     return sessionStorage.getItem('refreshToken');
+    // }
 const navigate = useNavigate();
 
+useEffect(()=>
+{if(sessionStorage.getItem('username')){
+    navigate('/');
+}}
+,[])
+if(sessionStorage.getItem('username')){
+    navigate('/')
+}
 
 const attemptLogIn = async() => {
     try {
-        const request = await fetch("http://localhost:3000/log-in", {
+        const request = await fetch("http://localhost:3000/login", {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -44,17 +53,18 @@ const attemptLogIn = async() => {
         if(!request.ok){
             throw new Error('unable to perform request');
         }
-        const data = await request.json();
-        setJWT(data.accessToken);
+        var isAdmin = await request.json();
+        // setJWT(data.accessToken);
 
-        const [header, payload, signature] = data.accessToken.split('.');
-        const decodePayload = JSON.parse(atob(payload));
-        const theUsername = decodePayload.username;
-        console.log('this is apparently the jwt decoded username:', theUsername);
+        // const [header, payload, signature] = data.accessToken.split('.');
+        // const decodePayload = JSON.parse(atob(payload));
+        // const theUsername = decodePayload.username;
+        // console.log('this is apparently the jwt decoded username:', theUsername);
 
 
-        setRefreshToken(data.refreshToken);
-        console.log('these are the tokens:',data);
+        // setRefreshToken(data.refreshToken);
+        // console.log('these are the tokens:',data);
+        console.log('is this user an admin: ', isAdmin);
     } catch(error){
         console.error(error);
         setUsername('');
@@ -64,15 +74,17 @@ const attemptLogIn = async() => {
     }
     console.log('this is success if you see this-- but should it be?');
     sessionStorage.setItem('username', username);
-    username === 'admin' ? dispatch(authAdmin()) : dispatch(authUser());
+    // isAdmin ? dispatch(authAdmin()) : dispatch(authUser());
+    isAdmin ? sessionStorage.setItem('admin', true) : sessionStorage.setItem('admin', false);
     setUsername('');
     setPassword('');
+    setLoggingIn(true);
     // navigate('/');
 }
 
-const auth = useSelector(selectAuth);
-console.log('🥑',auth); 
-if(auth !== ''){
+// const auth = useSelector(selectAuth);
+// console.log('🥑',auth); 
+if(loggingIn){
     navigate('/');
 }
     // useEffect(()=>{

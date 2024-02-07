@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import Banner from "../components/BannerAdmin";
+import BannerAdmin from "../components/BannerAdmin";
 import { useNavigate } from "react-router-dom";
 import Comment from "../components/Comment";
 import { remove, setUsername } from "../redux/authSlice";
 import { useDispatch} from 'react-redux'
+import setUsernameFromSession from "../utils/sessionUsername";
 
 const Profile = () => {
 
@@ -14,20 +15,33 @@ const Profile = () => {
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
+   
+    setUsernameFromSession();
+
+    useEffect(()=>
+        {if(!sessionStorage.getItem('username')){
+        navigate('/login');
+    }},[]);
+
 
     const getUsername = () => {
+        
         return sessionStorage.getItem('username');
     }
 
 
     useEffect(()=>{
+        if(!sessionStorage.getItem('username')){
+            navigate('/login');
+        } 
         const getProfileInfo = async() => {
             try {
-                const token = sessionStorage.getItem('jwt');
+                // const token = sessionStorage.getItem('jwt');
                 const request = await fetch('http://localhost:3000/comments', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    credentials: 'include',
+                    // headers: {
+                    //     'Authorization': `Bearer ${token}`
+                    // }
                 });
                 if(!request.ok){
                     throw new Error('could not connect to db');
@@ -45,23 +59,24 @@ const Profile = () => {
 
     const logoutUser = async() => {
       try {
-        const token = sessionStorage.getItem('jwt');
+        // const token = sessionStorage.getItem('jwt');
         const request = await fetch("http://localhost:3000/logout", {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
+            method: 'GET',
+            credentials: 'include',
+            // headers: {
+            //     'Authorization': `Bearer ${token}`
+            // },
             });
         
         if(!request.ok){
             throw new Error('unable to logout? go figure');
         }
         const data = await request.json();
-        sessionStorage.setItem('jwt', null);
-        sessionStorage.setItem('refreshToken', null);
+        // sessionStorage.setItem('jwt', null);
+        // sessionStorage.setItem('refreshToken', null);
         console.log('user should be logged out', data);
         // dispatch(remove());
-        dispatch(setUsername(''));
+        sessionStorage.removeItem('username');
         navigate('/login');
       } catch (error) {
         console.error(error);
@@ -71,7 +86,7 @@ const Profile = () => {
 
     return (
        <div className="bg-gradient-to-tr from-cyan-300 from-1% via-40% to-99% via-slate-100 to-purple-400 min-h-screen">
-        <Banner/>
+        <BannerAdmin/>
         <div className=" w-5/12 min-w-450 min-h-screen flex flex-col items-center m-auto bg-white overflow-scroll">
             <div className="flex items-center gap-5 mt-24">
                 <div className=" border-4 border-gray-400 h-32 w-32 rounded-full flex justify-center items-center">Profile Picture</div>

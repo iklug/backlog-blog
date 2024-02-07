@@ -5,8 +5,9 @@ import Comment from "../components/Comment";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { selectAuth } from "../redux/authSlice";
-import { useSelector } from "react-redux";
-import BannerUser from "../components/BannerUser";
+
+import { useSelector, useDispatch } from "react-redux";
+import { selectPostById, selectPosts, removePostById } from "../redux/postsSlice";
 
 
 const Post = () => {
@@ -19,20 +20,28 @@ const [comments, setComments] = useState(null);
 const [commentBody, setCommentBody] = useState(null);
 const {id} = useParams();
 
+const dispatch = useDispatch();
 const auth = useSelector(selectAuth);
+
+const posts = useSelector(selectPosts);
+const post = useSelector(posts => selectPostById(posts, id));
+console.log('this should be the post 🐰 ',post)
+console.log('this should be the posts ',posts)
 
 
 useEffect(()=>{
     if(thisPost == null){
         const retrieveData = async()=> {
             try{
-        const request = await fetch(`http://localhost:3000/posts/${id}`);
+        const request = await fetch(`http://localhost:3000/posts/${id}`, {
+            credentials: 'include',
+        });
         if(!request.ok){
         throw new Error('oops');
         }
-        const data = await request.json();            
-        setThisPost({...data})
-        console.log(data.comments);      
+        const data = await request.json();
+        console.log('🦊🦊🦊🦊', data);            
+        setThisPost({...data})      
         } catch (error) {
         console.error(error);
         }}
@@ -44,7 +53,9 @@ useEffect(()=>{
     if(viewComments && comments === null){
         const getComments = async()=>{
             try {
-                const request = await fetch(`http://localhost:3000/posts/${id}/comments-full`);
+                const request = await fetch(`http://localhost:3000/posts/${id}/comments-full`, {
+                    credentials: 'include',
+                });
                 if(!request.ok){
                     throw new Error('oopsies');
                 }
@@ -66,6 +77,7 @@ const submitComment = async() => {
         console.log('token up in here: ', token);
         const request = await fetch(`http://localhost:3000/posts/${id}/comments`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -90,19 +102,22 @@ const submitComment = async() => {
 
 const deletePost = async() => {
         try {
-            const token = sessionStorage.getItem('jwt');
-            console.log('token up in here: ', token);
+            // const token = sessionStorage.getItem('jwt');
+            // console.log('token up in here: ', token);
             const request = await fetch(`http://localhost:3000/posts/${id}`, {
                 method: 'DELETE',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    // 'Authorization': `Bearer ${token}`
                 }
             });
             if(!request.ok){
                 throw new Error('error at request');
             }
             const data = await request.json();
+            console.log('this is the id we removing', id);
+            dispatch(removePostById(id));
             console.log(data);
             navigate(`/`);
         } catch (error) {
@@ -115,18 +130,18 @@ const deletePost = async() => {
 
     return (
         <div className=" h-screen">
-            {auth === 'admin' ? <BannerAdmin /> : <BannerUser/>}
+            <BannerAdmin/>
         <div id='postContent' className=" mt-12 h-screen w-full bg-scroll bg-repeat bg-cover pt-16 bg-gradient-to-tr from-cyan-300 from-1% via-40% to-99% via-slate-100 to-purple-400">
-            {thisPost && <div>
+            {post && <div>
                 <div id="postBody" className=" w-7/12 m-auto p-10 border-2 bg-white rounded-xl shadow-lg whitespace-normal">
-                {auth === 'admin' && <div onClick={deletePost} className=" text-xl font-bold float-right -mt-10 -mr-8 text-slate-300 cursor-pointer">x</div>}
+                {post.author.username === sessionStorage.getItem('username') && <div onClick={deletePost} className=" text-xl font-bold float-right -mt-10 -mr-8 text-slate-300 cursor-pointer">x</div>}
 
-                    <div className=" text-4xl text-gray-800">{thisPost.post.title}</div>
+                    <div className=" text-4xl text-gray-800">{post.title}</div>
                     <div id="smallerDetails">
-                        <div className="font-semibold text-sm mt-2">by Admin</div>
-                        <div className="text-xs font-thin border-b-2 border-slate-50 w-32">{'posted '+ thisPost.post.timeStamp.slice(0,10)}</div>
+                        <div className="font-semibold text-sm mt-2">by {post.author.username}</div>
+                        <div className="text-xs font-thin border-b-2 border-slate-50 w-32">{'posted '+ post.timeStamp.slice(0,10)}</div>
                     </div>
-                    <div className="whitespace-normal mt-2">{thisPost.post.content}</div>
+                    <div className="whitespace-normal mt-2">{post.content}</div>
                 </div>
                     <div className="flex justify-center gap-4 mt-4">
                         <div className="flex justify-center items-center w-36 bg-cyan-100 text-slate-600 rounded-lg drop-shadow-md" onClick={()=>{setCommentBody(''); setViewComments(false)}}>New Comment</div>
