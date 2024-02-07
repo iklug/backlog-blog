@@ -1,10 +1,10 @@
 
 const setUsernameFromSession = async () => {
-
+    
        if(!sessionStorage.getItem('username')){
 
             try {
-                const request = await fetch('http://localhost:3000/session', {
+                const request = await fetch('https://backlog-blog.fly.dev/session', {
                 credentials: 'include',
             });
                 if(!request.ok){
@@ -15,6 +15,7 @@ const setUsernameFromSession = async () => {
                 sessionStorage.setItem('admin', userCredentials.admin);
         } catch (error) {
                 console.error(error);
+
     }}
 }
 
